@@ -1,5 +1,6 @@
 package ch2
 
+//ex2.1
 class Fib {
   def fib(n: Int): Int = {
     def loop(n: Int, prev: Int, cur: Int): Int =

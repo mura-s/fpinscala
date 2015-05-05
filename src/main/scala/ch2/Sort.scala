@@ -1,5 +1,6 @@
 package ch2
 
+// ex2.2
 class Sort {
   def isSorted[A](as: Array[A], ordered: (A, A) => Boolean): Boolean = {
     @annotation.tailrec
