@@ -15,8 +15,11 @@ object Par {
 
   private case class UnitFuture[A](get: A) extends Future[A] {
     def isDone = true
+
     def get(timeout: Long, units: TimeUnit) = get
+
     def isCancelled = false
+
     def cancel(evenIfRunning: Boolean): Boolean = false
   }
 
@@ -83,19 +86,19 @@ object Par {
     }
 
   // ex7.13
-  def chooser[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+  def chooser[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     es => {
       val a = run(es)(pa).get
       run(es)(choices(a))
     }
 
   def choiceViaChooser[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
-    chooser(cond)(b => if(b) t else f)
+    chooser(cond)(b => if (b) t else f)
 
   def choiceNViaChooser[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
     chooser(n)(i => choices(i))
 
-  def flatMap[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+  def flatMap[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     es => {
       val a = run(es)(pa).get
       run(es)(choices(a))
@@ -105,7 +108,7 @@ object Par {
   def join[A](a: Par[Par[A]]): Par[A] =
     es => run(es)(run(es)(a).get())
 
-  def flatMapViaJoin[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+  def flatMapViaJoin[A, B](pa: Par[A])(choices: A => Par[B]): Par[B] =
     join(map(pa)(choices))
 
   def joinViaFM[A](a: Par[Par[A]]): Par[A] =
