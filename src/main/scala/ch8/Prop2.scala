@@ -6,7 +6,7 @@ import ch8.Prop2._
 import ch6._
 import ch5._
 import Gen._
-import java.util.concurrent.{Executors, ExecutorService}
+import java.util.concurrent.Executors
 
 object Prop2 {
   type FailedCase = String
@@ -84,7 +84,7 @@ object Prop2 {
   // l.takeWhile(f) ++ l.dropWhile(f) == l
 
   // ex8.19: 引数のhashcodeとRNGを使ってInt値を返す。実装はpass
-  
+
   // ex8.20: ex8.14などの使い方を参照
 }
 
@@ -194,7 +194,7 @@ object Gen {
 case class SGen[+A](forSize: Int => Gen[A]) {
   // ex8.11
   def flatMap[B](f: A => Gen[B]): SGen[B] =
-    SGen(forSize andThen (_ flatMap (f)))
+    SGen(forSize andThen (_ flatMap f))
 
   def apply(n: Int): Gen[A] = forSize(n)
 }
