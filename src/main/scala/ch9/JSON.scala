@@ -11,8 +11,8 @@ object JSON {
   case class JObject(get: Map[String, JSON]) extends JSON
 
   // ex9.9: pass
-  def jsonParser[Err, Parser[+_]](P: Parsers[Err, Parser]): Parser[JSON] = {
+//  def jsonParser[Err, Parser[+_]](P: Parsers[Err, Parser]): Parser[JSON] = {
     //import P._
-  }
+//  }
 
 }
