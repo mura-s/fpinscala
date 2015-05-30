@@ -1,6 +1,7 @@
 package ch11
 
 import language._
+import ch6._
 import ch7._
 import ch7.Par._
 import ch8._
@@ -58,6 +59,30 @@ trait Monad[F[_]] extends Functor[F] {
         if (!b) filterM(t)(f)
         else map(filterM(t)(f))(h :: _))
     }
+
+  // ex11.7
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
+    a => flatMap(f(a))(g)
+
+  // ex11.8
+  def flatMapViaCompose[A, B](ma: F[A])(f: A => F[B]): F[B] =
+    compose((_: Unit) => ma, f)(())
+
+  // ex11.9, 11.10, 11.11: pass
+
+  // ex11.12
+  def join[A](mma: F[F[A]]): F[A] = flatMap(mma)(ma => ma)
+
+  // ex11.13
+  def flatMapViaJM[A, B](ma: F[A])(f: A => F[B]): F[B] =
+    join(map(ma)(f))
+
+  def composeViaJM[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
+    a => join(map(f(a))(g))
+
+  // ex11.14, 11.15, 11.6: pass
+
+
 }
 
 object Monod {
@@ -100,4 +125,39 @@ object Monod {
 
   // ex11.2: pass
 
+  // ex11.17
+  val idMonad = new Monad[Id] {
+    def unit[A](a: => A) = Id(a)
+    def flatMap[A, B](ma: Id[A])(f: A => Id[B]): Id[B] = ma flatMap f
+  }
+
+  def stateMonad[S] = new Monad[({type f[x] = State[S, x]})#f] {
+    def unit[A](a: => A): State[S, A] = State(s => (a, s))
+    def flatMap[A, B](st: State[S, A])(f: A => State[S, B]): State[S, B] =
+      st flatMap f
+  }
+
+  // ex11.18: pass
+
+  def getState[S]: State[S, S] = State(s => (s, s))
+  def setState[S](s: S): State[S, Unit] = State(_ => ((), s))
+
+  // ex11.19: pass
+}
+
+// ex11.17
+case class Id[A](value: A) {
+  def map[B](f: A => B): Id[B] = Id(f(value))
+  def flatMap[B](f: A => Id[B]): Id[B] = f(value)
+}
+
+// ex11.20
+case class Reader[R, A](run: R => A)
+
+object Reader {
+  def readerMonad[R] = new Monad[({type f[x] = Reader[R, x]})#f] {
+    def unit[A](a: => A): Reader[R, A] = Reader(_ => a)
+    def flatMap[A, B](st: Reader[R, A])(f: A => Reader[R, B]): Reader[R, B] =
+      Reader(r => f(st.run(r)).run(r))
+  }
 }
