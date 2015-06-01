@@ -85,7 +85,7 @@ trait Monad[F[_]] extends Functor[F] {
 
 }
 
-object Monod {
+object Monad {
   val genMonad = new Monad[Gen] {
     def unit[A](a: => A): Gen[A] = Gen.unit(a)
 

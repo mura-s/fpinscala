@@ -144,6 +144,10 @@ object State {
     ss.foldRight(unit[S, List[A]](List())) { (s, acc) =>
       s.map2(acc)(_ :: _)
     }
+
+  def get[S]: State[S, S] = State(s => (s, s))
+
+  def set[S](s: S): State[S, Unit] = State(_ => ((), s))
 }
 
 // ex6.11: pass
