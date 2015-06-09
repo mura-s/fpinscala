@@ -254,6 +254,8 @@ object SimpleStreamTransducers {
 
   }
 
+  // ex15.10, 15.11, 15.12: pass
+
 }
 
 
